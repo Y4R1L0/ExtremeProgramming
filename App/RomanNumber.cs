@@ -8,9 +8,9 @@ namespace App
 {
     public class RomanNumber
     {
-        public int Value { get; set; }
+        public Int32 Value { get; set; }
 
-        private static Dictionary<char, int> romanValues = new Dictionary<char, int>
+        private static Dictionary<Char, Int32> romanValues = new Dictionary<Char, Int32>
         {
             { 'I', 1 },
             { 'V', 5 },
@@ -23,12 +23,26 @@ namespace App
 
         public static RomanNumber Parse(string roman)
         {
-            int result = 0;
-            int prev = 0;
-
-            for (int i = roman.Length - 1; i >= 0; i--)
+            if (String.IsNullOrEmpty(roman))
             {
-                int current = romanValues[roman[i]];
+                throw new ArgumentException("Roman number is null or Empty");
+            }
+
+            Int32 result = 0;
+            Int32 prev = 0;
+            Int32 lastDigitIndex = roman.StartsWith("-") ? 1 : 0;
+
+            roman = roman.Trim();
+
+            for (Int32 i = roman.Length - 1; i >= 0; i--)
+            {
+
+                if (!romanValues.Keys.Any((key) => key == roman[i]))
+                {
+                    throw new ArgumentException($"'{roman[i]}' is an invalid symbol");
+                }
+
+                Int32 current = romanValues[roman[i]];
 
                 if (current < prev)
                 {
@@ -44,7 +58,7 @@ namespace App
 
             return new()
             {
-                Value = result
+                Value = lastDigitIndex == 0 ? result : -result
             };
         }
 

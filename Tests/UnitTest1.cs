@@ -6,7 +6,8 @@ namespace Tests
     public class UnitTest1
     {
         [TestMethod]
-        public void TestRomanNumbersParse()
+         
+        public void TestRomanNumberParse()
         {
             Assert.AreEqual(1, RomanNumber.Parse("I").Value);
             Assert.AreEqual(2, RomanNumber.Parse("II").Value);
@@ -108,6 +109,50 @@ namespace Tests
             Assert.AreEqual(98, RomanNumber.Parse("XCVIII").Value);
             Assert.AreEqual(99, RomanNumber.Parse("XCIX").Value);
             Assert.AreEqual(100, RomanNumber.Parse("C").Value);
+        }
+
+        [TestMethod]
+        public void TestRomanNumberInvalid()
+        {
+            Assert.ThrowsException<ArgumentException>(() => RomanNumber.Parse(null!), "() => RomanNumber.Parse(null!)");
+            var ex = Assert.ThrowsException<ArgumentException>(() => RomanNumber.Parse(""), "() => RomanNumber.Parse(\"\")");
+
+            Assert.IsFalse(String.IsNullOrEmpty(ex.Message), "Exception message is null or empty");
+
+
+            var testCases = new Dictionary<string, string>()
+            {
+                {"XA","A" },
+                {"G","G" },
+                {"#","#" },
+                {"$","$" },
+                {"F","F" },
+                {"%","%" },
+                {"T","T" },
+                {"@","@" },
+            };
+
+            foreach (var testCase in testCases)
+            {
+                ex = Assert.ThrowsException<ArgumentException>(() => RomanNumber.Parse(testCase.Key), $"Roman number parse {testCase.Key} -> Exception");
+
+                Assert.IsTrue(ex.Message.Contains($"'{testCase.Value}'"));
+            }
+
+        }
+
+        [TestMethod]
+        public void TestRomanNumberDubious()
+        {
+            string[] dubious = { " XC", "XC ", "\tXC", "\nXC" };
+
+            foreach (var dub in dubious)
+            {
+                var parseResult = RomanNumber.Parse(dub);
+                Assert.IsNotNull(parseResult, $"{dub} cause null");
+                Assert.AreEqual(parseResult.Value, 90);
+            }
+
         }
     }
 }
